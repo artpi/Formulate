@@ -20,7 +20,7 @@ namespace Spreadsheet;
         public $y;
 
         function getValue() {
-            return NAN;
+            return "NAN";
         }
 
         function get() {
@@ -76,8 +76,8 @@ namespace Spreadsheet;
             $formula = preg_replace_callback("#[A-Z]+[0-9]+#is", function ($adr) {
                 $index = $adr[0];
                 $val = $this->table->data[$index]->getValue();
-                if($val == NAN) {
-                    $this->error = NAN;
+                if($val == "NAN") {
+                    $this->error = "NAN";
                 }
                 return $val;
             }, $this->formula);
@@ -85,8 +85,7 @@ namespace Spreadsheet;
             if($this->error == 0) {
                 $this->value = $this->table->math->evaluate($formula);
             } else {
-                syslog(LOG_INFO, "#NaN: ".$formula);
-                $this->value = NAN;
+                $this->value = "NAN";
             }
             
             return $this->value;
@@ -94,7 +93,7 @@ namespace Spreadsheet;
 
         function get() {
             $this->getValue();
-            if($this->error == NAN) {
+            if($this->error == "NAN") {
                 $val = "#NaN";
             } else {
                 $val = $this->value;
