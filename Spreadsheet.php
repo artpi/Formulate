@@ -93,7 +93,7 @@ namespace Spreadsheet;
 
         function get() {
             $this->getValue();
-            if($this->error == "NAN") {
+            if($this->value == "NAN") {
                 $val = "#NaN";
             } else {
                 $val = $this->value;
@@ -108,7 +108,7 @@ namespace Spreadsheet;
         }
 
         static function getInstance($value) {
-            if(preg_match('#\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?)\}#is', $value, $result)) {
+            if(preg_match('#\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?(\#NaN)?)\}#is', $value, $result)) {
                 $ret = new self();
                 $ret->value = $result[2];
                 $ret->formula = str_replace(array(' ',','),array('','.'),$result[1]);
