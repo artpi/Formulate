@@ -108,10 +108,10 @@ namespace Spreadsheet;
         }
 
         static function getInstance($value) {
-            if(preg_match('#\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([0-9]*?)\}#is', $value, $result)) {
+            if(preg_match('#\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?)\}#is', $value, $result)) {
                 $ret = new self();
                 $ret->value = $result[2];
-                $ret->formula = $result[1];
+                $ret->formula = str_replace(array(' ',','),array('','.'),$result[1]);
                 $ret->origin = $result[0];
                 return $ret;
             } else {
