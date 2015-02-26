@@ -85,6 +85,7 @@ namespace Spreadsheet;
             if($this->error == 0) {
                 $this->value = $this->table->math->evaluate($formula);
             } else {
+                syslog(LOG_INFO, "#NaN: ".$formula);
                 $this->value = NAN;
             }
             
@@ -146,7 +147,7 @@ namespace Spreadsheet;
                 $cell = Cell::getInstance($val);
             }
 
-            $cell->setup($this, $index, $x, $y);
+            $cell->setup($this, $index, $column, $row);
             $this->data[$index] = $cell;
         }
 
