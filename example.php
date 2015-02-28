@@ -1,13 +1,14 @@
 <?php
 
-require 'Formulate.php';
-
+require_once 'Formulate.php';
+require_once 'SpreadSheet.php';
+require_once 'evalmath.class.php';
 
 $str = '
 <table>
 <tr><td>3</td><td>4</td><td>5</td></tr>
 <tr><td>6</td><td>7</td><td>8</td></tr>
-<tr><td>{C2-C1=}<S/td><td></td><td>{A1+B1/(C2-A2) - 8 - (1 * 6)=}</td></tr>
+<tr><td>{C2-C1=}</td><td></td><td>{A1+B1/(C2-A2) - 8 - (1 * 6)=}</td></tr>
 </table>
 <br><br><br><br>
 <h1>Potato</h1>
