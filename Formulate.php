@@ -1,4 +1,12 @@
 <?php
+/**
+ * Helpers to calculate macros, formulas ant other data inside html.
+ *
+ * @package    Formulate
+ * @author     Artpi <artpi@post.pl>
+ * @link       https://github.com/artpi/Formulate
+ * @see        https://github.com/artpi/Formulate/example.php
+ */
 
 //Load used libraries
 $path = realpath(dirname(__FILE__));
