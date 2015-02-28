@@ -9,7 +9,7 @@
  * @see        https://github.com/artpi/Formulate/example.php
  */
 
-namespace Spreadsheet;
+namespace Formulate\Spreadsheet;
 
     class Cell {
         public $value;
@@ -68,6 +68,7 @@ namespace Spreadsheet;
 
 
     class FormulaCell extends NumCell{
+        public static $regex = '\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?(\#NaN)?)\}';
         public $formula;
         private $error = 0;
         private $origin;
@@ -108,7 +109,7 @@ namespace Spreadsheet;
         }
 
         static function getInstance($value) {
-            if(preg_match('#\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?(\#NaN)?)\}#is', $value, $result)) {
+            if(preg_match('#'.self::$regex.'#is', $value, $result)) {
                 $ret = new self();
                 $ret->value = $result[2];
                 $ret->formula = str_replace(array(' ',','),array('','.'),$result[1]);
