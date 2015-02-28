@@ -1,8 +1,7 @@
 <?php
 
 require_once 'Formulate.php';
-require_once 'SpreadSheet.php';
-require_once 'evalmath.class.php';
+
 
 $str = '
 <table>

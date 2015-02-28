@@ -8,6 +8,10 @@
  * @see        https://github.com/artpi/Formulate/example.php
  */
 
+//Load used libraries
+$path = realpath(dirname(__FILE__));
+require_once $path.'/Spreadsheet.php';
+require_once $path.'/evalmath.class.php';
 
 //Initialize them
 use Formulate\Spreadsheet\Sheet;
