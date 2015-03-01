@@ -55,6 +55,7 @@ namespace Formulate\Spreadsheet;
         }
 
         static function getInstance($value) {
+            $value = str_replace(",", ".", $value);
             if(is_numeric($value)) {
                 $ret = new self();
                 $ret->value = $value;
@@ -70,34 +71,63 @@ namespace Formulate\Spreadsheet;
     class FormulaCell extends NumCell{
         public static $regex = '\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?(\#NaN)?)\}';
         public $formula;
+        public $calculated = 0;
         private $error = 0;
         private $origin;
 
         function getValue() {
+            //We need this code for circular dependency detection
+            if($this->calculated === 2) {
+                //Already calculated. Nothing to do here.
+                return $this->value;
+            } else if ($this->calculated === 1) {
+                //Whoops, we've got a loop!
+                $this->error = "LOOP";
+                $this->value = $this->error;
+                return $this->value;
+            } else {
+                //Mark 'in calculation'.
+                $this->calculated = 1;
+            }
+
+            //Lets transform formula into mathematical expression
             $formula = preg_replace_callback("#[A-Z]+[0-9]+#is", function ($adr) {
                 $index = $adr[0];
+
+                if(!isset($this->table->data[$index])) {
+                    $this->error = "RANGE";
+                    return $this->error;
+                }
+
                 $val = $this->table->data[$index]->getValue();
-                if($val == "NAN") {
-                    $this->error = "NAN";
+
+                if($val === "NAN" || $val === "RANGE" || $val === "NAME" || $val === "LOOP") {
+                    $this->error = $val;
                 }
                 return $val;
             }, $this->formula);
 
-            if($this->error == 0) {
+            //Lets calculate the value of this expression.
+            if($this->error === 0) {
                 $this->value = $this->table->math->evaluate($formula);
+
+                if($this->table->math->last_error != null) {
+                    $this->error = "NAME";
+                    $this->value = $this->error;
+                }
             } else {
-                $this->value = "NAN";
+                $this->value = $this->error;
             }
-            
+            $this->calculated = 2;
             return $this->value;
         }
 
         function get() {
             $this->getValue();
-            if($this->value == "NAN") {
-                $val = "#NaN";
-            } else {
+            if($this->error === 0) {
                 $val = $this->value;
+            } else {
+                $val = "#".$this->error;
             }
 
             return "{".$this->formula."=".$val."}";

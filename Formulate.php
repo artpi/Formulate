@@ -24,7 +24,6 @@ class Formulate {
     protected $math;
 
     protected function parseSpreadSheet($oldHtml) {
-
         $sheet = new Sheet($oldHtml, $this->math);
         $newHtml = $sheet->parse();
         
@@ -40,10 +39,11 @@ class Formulate {
         $this->src = $html;
         $this->result = $html;
         $this->math = new EvalMath;
+        $this->math->suppress_errors = true;
 
         //Are there any spreadsheets in the html?
-        preg_match_all('#<table[^>]*?>.*?'.FormulaCell::$regex.'.*?</table>#is', $this->src, $results);
-        for ($i=0; $i < count($results[0]); $i++) { 
+        preg_match_all('#<table[^>]*?>.*?'.FormulaCell::$regex.'.*?<\/table>#is', $this->src, $results);
+        for ($i=0; $i < count($results[0]); $i++) {  
             $this->parseSpreadSheet($results[0][$i]);
         }
         return $this->changes;
