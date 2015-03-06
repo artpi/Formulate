@@ -142,6 +142,24 @@ test("Minimal formual", '
 </table>
 ');
 
+test("Recalculating error codes", '
+<table>
+<tr><td>SUMA</td><td></td><td>{A5=#RANGE}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{A2+B2=#NAN}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{A3+B3=#NAME}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{A4+B4=#LOOP}</td></tr>
+<tr><td>17</td><td></td><td></td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{A5=17}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{A2+B2=7.93335}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{A3+B3=13.6432}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{A4+B4=14.0733444}</td></tr>
+<tr><td>17</td><td></td><td></td></tr>
+</table>
+');
+
 test("NAN", '
 <table>
 <tr><td>SUMA</td><td></td><td>{A5=}</td></tr>
@@ -346,3 +364,29 @@ test("Function: Loop detection",'
 <tr><td>6.5333444</td><td>7.54</td><td>3</td></tr>
 </table>
 ');
+
+test("Evernote code",'
+<table style="border-collapse: collapse; table-layout: fixed;" border="1" width="100%" cellspacing="0" cellpadding="2">
+<tbody>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">1</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">2</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A1/B2=}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">3</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">4</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A2-B2=}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">5</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">6</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A3*B3=}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">7</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">8</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{SUM(A1:B5)=}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">9</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">10</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A5+B5+C1+C2+C3+C4=}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td></tr>
+</tbody>
+</table>
+','
+<table style="border-collapse: collapse; table-layout: fixed;" border="1" width="100%" cellspacing="0" cellpadding="2">
+<tbody>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">1</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">2</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A1/B2=0.25}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">3</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">4</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A2-B2=-1}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">5</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">6</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A3*B3=30}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">7</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">8</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{SUM(A1:B5)=55}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">9</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">10</td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">{A5+B5+C1+C2+C3+C4=103.25}</td></tr>
+<tr><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td><td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;"><br clear="none"></td></tr>
+</tbody>
+</table>
+');
+
+

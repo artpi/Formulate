@@ -77,7 +77,7 @@ namespace Formulate\Spreadsheet;
 
 
     class FormulaCell extends NumCell{
-        public static $regex = '\{([A-Z0-9/+\-\*\:\(\)\.\, ]+)=([ 0-9.]*?(\#NAN)?)\}';
+        public static $regex = '\{([A-Z0-9/+\-\*\:\(\)\.\, ]+)=([ 0-9.]*?(\#[A-Z]+)?)\}';
         public $formula;
         public $calculated = 0;
         protected $origin;
@@ -321,7 +321,6 @@ namespace Formulate\Spreadsheet;
                 }
             }
 
-            $this->getRange("A1", "D3");
         }
 
     }
