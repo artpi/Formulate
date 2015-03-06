@@ -17,13 +17,13 @@ function form($str) {
 
 //Let's roll with some tests
 
-function test($src, $dst) {
+function test($objective, $src, $dst) {
     $result = form($src);
 
     if(trim($result) == trim($dst)) {
-        echo "Test OK \n";
+        echo "OK: `".$objective."`\n";
     } else {
-        echo "---------TEST FAILED----------\n";
+        echo "---------TEST `".$objective."` FAILED----------\n";
         echo $src;
         echo "\n-------RESULT:--------------\n";
         echo $result;
@@ -33,8 +33,7 @@ function test($src, $dst) {
 
 
 
-test('
-<table>
+test("Multiple sheets", '<table>
 <tr><td>3</td><td>4</td><td>5</td></tr>
 <tr><td>6</td><td>7</td><td>8</td></tr>
 <tr><td>{C2-C1=}</td><td></td><td>{A1+B1/(C2-A2) - 8 - (1 * 6)=}</td></tr>
@@ -60,7 +59,7 @@ test('
 
 
 
-test('
+test("Some other test", '
 <table>
 <tr><td>SUMA</td><td></td><td>{C2+C3+C4=}</td></tr>
 <tr><td>3</td><td>4</td><td>{A2+B2=}</td></tr>
@@ -76,7 +75,7 @@ test('
 </table>
 ');
 
-test('
+test("Fractions",'
 <table>
 <tr><td>SUMA</td><td></td><td>{C2+C3+C4=}</td></tr>
 <tr><td>3</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -93,7 +92,7 @@ test('
 ');
 
 
-test('
+test(", in fractions", '
 <table>
 <tr><td>SUMA</td><td></td><td>{C2+C3+C4=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -109,7 +108,7 @@ test('
 </table>
 ');
 
-test('
+test("Out of range", '
 <table>
 <tr><td>SUMA</td><td></td><td>{C2+C3+C4/B78=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -125,7 +124,7 @@ test('
 </table>
 ');
 
-test('
+test("Minimal formual", '
 <table>
 <tr><td>SUMA</td><td></td><td>{A5=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -143,7 +142,7 @@ test('
 </table>
 ');
 
-test('
+test("NAN", '
 <table>
 <tr><td>SUMA</td><td></td><td>{A5=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -161,7 +160,7 @@ test('
 </table>
 ');
 
-test('
+test("Error in formula", '
 <table>
 <tr><td>SUMA</td><td></td><td>{A2 + potato()=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -180,7 +179,7 @@ test('
 ');
 
 
-test('
+test("Circular dependency", '
 <table>
 <tr><td>SUMA</td><td></td><td>{C1=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{A2+B2=}</td></tr>
@@ -198,7 +197,7 @@ test('
 </table>
 ');
 
-test('
+test("Multiple circular depenedencies", '
 <table>
 <tr><td>SUMA</td><td></td><td>{C4+5=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{C1+2=}</td></tr>
@@ -214,7 +213,7 @@ test('
 </table>
 ');
 
-test('
+test("Calculations again", '
 <table>
 <tr><td>SUMA</td><td></td><td>{A2+A3=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{C1+2=}</td></tr>
@@ -230,7 +229,7 @@ test('
 </table>
 ');
 
-test('
+test("Some multiplications and divisions",'
 <table>
 <tr><td>SUMA</td><td></td><td>{A2+A3=}</td></tr>
 <tr><td>3,43335</td><td>4.5</td><td>{C1*2=}</td></tr>
@@ -243,5 +242,107 @@ test('
 <tr><td>3,43335</td><td>4.5</td><td>{C1*2=19.7331}</td></tr>
 <tr><td>6,4332</td><td>7.21</td><td>{C2/C1=2}</td></tr>
 <tr><td>6.5333444</td><td>7.54</td><td>{C3-C1=-7.86655}</td></tr>
+</table>
+');
+
+
+
+
+test("Function: SUM",'
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:B4)=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{C1*2=}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{C2/C1=}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{C3-C1=}</td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:B4)=35.6498944}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{C1*2=71.2997888}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{C2/C1=2}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{C3-C1=-33.6498944}</td></tr>
+</table>
+');
+
+test("Function: SUM with some formulas",'
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:B4) + A3 - B4 * B2=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{C1*2=}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{C2/C1=}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{C3-C1=}</td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:B4)+A3-B4*B2=8.1530944}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>{C1*2=16.3061888}</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{C2/C1=2}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>{C3-C1=-6.1530944}</td></tr>
+</table>
+');
+
+
+test("Function: AVG",'
+<table>
+<tr><td>SUMA</td><td></td><td>{AVG(A2:B4)=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{AVG(A2:B4)=5.9416490666667}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+');
+
+
+test("Function: Out of range",'
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:F4)=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A2:F4)=#RANGE}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+');
+
+test("Function: NAN",'
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A1:C4)=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(A1:C4)=#NAN}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td></td></tr>
+<tr><td>6,4332</td><td>7.21</td><td></td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td></td></tr>
+</table>
+');
+
+
+test("Function: Loop detection",'
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(C1:C4)=}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>0</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{A3+B3=}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>3</td></tr>
+</table>
+','
+<table>
+<tr><td>SUMA</td><td></td><td>{SUM(C1:C4)=#LOOP}</td></tr>
+<tr><td>3,43335</td><td>4.5</td><td>0</td></tr>
+<tr><td>6,4332</td><td>7.21</td><td>{A3+B3=13.6432}</td></tr>
+<tr><td>6.5333444</td><td>7.54</td><td>3</td></tr>
 </table>
 ');

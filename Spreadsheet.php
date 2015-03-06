@@ -18,9 +18,10 @@ namespace Formulate\Spreadsheet;
         public $index;
         public $x;
         public $y;
+        public $error = "NAN";
 
         function getValue() {
-            return "NAN";
+            return $this->error;
         }
 
         function get() {
@@ -38,20 +39,27 @@ namespace Formulate\Spreadsheet;
             return false;    
         }
 
+        function getError() {
+            return $this->error;
+        }
+
         static function getInstance($value) {
             $ret = new self();
             $ret->value = $value;
             return $ret;
         }
 
-
     }
 
 
+
+
+
     class NumCell extends Cell{
+        public $error = 0;
 
         function getValue() {
-            return $this->get();
+            return $this->value;
         }
 
         static function getInstance($value) {
@@ -69,43 +77,60 @@ namespace Formulate\Spreadsheet;
 
 
     class FormulaCell extends NumCell{
-        public static $regex = '\{([A-Z0-9/+\-\*\(\)\.\, ]+)=([ 0-9.]*?(\#NaN)?)\}';
+        public static $regex = '\{([A-Z0-9/+\-\*\:\(\)\.\, ]+)=([ 0-9.]*?(\#NAN)?)\}';
         public $formula;
         public $calculated = 0;
-        private $error = 0;
-        private $origin;
+        protected $origin;
 
-        function getValue() {
+
+        function loopDetected() {
             //We need this code for circular dependency detection
             if($this->calculated === 2) {
                 //Already calculated. Nothing to do here.
-                return $this->value;
+                return true;
             } else if ($this->calculated === 1) {
                 //Whoops, we've got a loop!
                 $this->error = "LOOP";
                 $this->value = $this->error;
-                return $this->value;
+                return true;
             } else {
                 //Mark 'in calculation'.
                 $this->calculated = 1;
+                return false;
+            }
+        }
+
+        function getValue() {
+            if($this->loopDetected()) {
+                return $this->value;
             }
 
-            //Lets transform formula into mathematical expression
-            $formula = preg_replace_callback("#[A-Z]+[0-9]+#is", function ($adr) {
-                $index = $adr[0];
+            //Lets catch any functions
+            $formula = preg_replace_callback("#".Func::$regex."#is", function ($adr) {
+                $func = new Func($this->table, $adr[1], $adr[2], $adr[3]);
+                $val = $func->getValue();
+                $this->error = $func->getError();
 
-                if(!isset($this->table->data[$index])) {
-                    $this->error = "RANGE";
-                    return $this->error;
-                }
-
-                $val = $this->table->data[$index]->getValue();
-
-                if($val === "NAN" || $val === "RANGE" || $val === "NAME" || $val === "LOOP") {
-                    $this->error = $val;
-                }
                 return $val;
             }, $this->formula);
+
+
+            if($this->error === 0) {
+                //Lets transform formula into mathematical expression
+                $formula = preg_replace_callback("#[A-Z]+[0-9]+#is", function ($adr) {
+                    $index = $adr[0];
+
+                    if(!isset($this->table->data[$index])) {
+                        $this->error = "RANGE";
+                        return $this->error;
+                    }
+
+                    $val = $this->table->data[$index]->getValue();
+                    $this->error = $this->table->data[$index]->getError();
+
+                    return $val;
+                }, $formula);
+            }
 
             //Lets calculate the value of this expression.
             if($this->error === 0) {
@@ -153,6 +178,70 @@ namespace Formulate\Spreadsheet;
     }
 
 
+    class Func extends FormulaCell {
+        protected $name;
+        public static $regex = "([A-Z]+)\(([A-Z]+[0-9]+)\:([A-Z]+[0-9]+)\)";
+        protected $rangeStart;
+        protected $rangeStop;
+        protected $subset;
+
+
+        function calculateFormula () {
+            $result = 0;
+            if($this->name === 'SUM') {
+                foreach ($this->subset as $index => $val) {
+                    $result += $val->value;
+                }
+                return $result;
+            } else if($this->name === 'AVG') {
+                foreach ($this->subset as $index => $val) {
+                    $result += $val->value;
+                }
+                return ($result / count($this->subset));
+            } else {
+                $this->error = "NAME";
+                return $this->value;    
+            }
+
+        }
+
+        function getValue() {
+            if($this->loopDetected()) {
+                return $this->value;
+            }
+
+            if($this->subset = $this->table->getRange($this->rangeStart, $this->rangeStop)) {                
+                foreach ($this->subset as $index => $val) {
+                    $val->getValue();
+                    if($val->getError()) {
+                        $this->error = $val->getError();
+                        break;
+                    }
+                }
+
+                if($this->error === 0) {
+                    $this->value = $this->calculateFormula();
+                }
+                
+            } else {
+                $this->error = "RANGE";
+                $this->value = $this->error;
+            }
+
+            $this->calculated = 2;
+            return $this->value;
+        }
+
+        function __construct($t, $name, $rangeStart, $rangeStop) {
+            $this->table = $t;
+            $this->name = $name;
+            $this->rangeStart = $rangeStart;
+            $this->rangeStop = $rangeStop;
+        }
+
+    }
+
+
 
 
 
@@ -161,14 +250,38 @@ namespace Formulate\Spreadsheet;
         public $origin = '';
         public $math;
         
-        function makeCell($row, $column, $val) {
+        static function getIndex($row, $column) {
             $row++;
             $col = 'A';
             for($i=0;$i<$column;$i++) {
                 ++$col;
             }
+            return $col.$row;
+        }
 
-            $index = $col.$row;
+        function getRange($begin, $end) {
+            $ret = array();
+            preg_match("#([A-Z]+)([0-9]+)#is", $begin, $start);
+            preg_match("#([A-Z]+)([0-9]+)#is", $end, $stop);
+            $col = $start[1];
+            while($col <= $stop[1]) {
+                $row = $start[2];
+                while($row <= $stop[2]) {
+                        $index = $col.$row;
+                        if(isset($this->data[$index])) {
+                            $ret[] = $this->data[$index];
+                        } else {
+                            return false;
+                        }
+                    $row++;
+                }
+                ++$col;
+            }
+            return $ret;
+        }
+
+        function makeCell($row, $column, $val) {
+            $index = self::getIndex($row, $column);
             $val = trim(strip_tags($val));
 
             if($cell = FormulaCell::getInstance($val)) {
@@ -207,6 +320,8 @@ namespace Formulate\Spreadsheet;
                     }
                 }
             }
+
+            $this->getRange("A1", "D3");
         }
 
     }
