@@ -77,7 +77,7 @@ namespace Formulate\Spreadsheet;
 
 
     class FormulaCell extends NumCell{
-        public static $regex = '\{([A-Z0-9/+\-\*\:\(\)\.\, ]+)=([ 0-9.]*?(\#[A-Z]+)?)\}';
+        public static $regex = '=([A-Z0-9\/+\-\*\:\(\)\.\, ]+)(<br\/><b>(\#[A-Z]+)|(-?[0-9,.]+)<\/b>)?';
         public $formula;
         public $calculated = 0;
         protected $origin;
@@ -155,7 +155,7 @@ namespace Formulate\Spreadsheet;
                 $val = "#".$this->error;
             }
 
-            return "{".$this->formula."=".$val."}";
+            return "=".$this->formula."<br/><b>".$val."</b>";
         }
 
         function result() {
@@ -166,7 +166,7 @@ namespace Formulate\Spreadsheet;
         static function getInstance($value) {
             if(preg_match('#'.self::$regex.'#is', $value, $result)) {
                 $ret = new self();
-                $ret->value = $result[2];
+                $ret->value = $result[3];
                 $ret->formula = str_replace(array(' ',','),array('','.'),$result[1]);
                 $ret->origin = $result[0];
                 return $ret;
@@ -251,7 +251,10 @@ namespace Formulate\Spreadsheet;
         public $math;
         
         static function getIndex($row, $column) {
-            $row++;
+            if(is_numeric($row)) {
+                $row++;
+            }
+
             $col = 'A';
             for($i=0;$i<$column;$i++) {
                 ++$col;
@@ -282,7 +285,7 @@ namespace Formulate\Spreadsheet;
 
         function makeCell($row, $column, $val) {
             $index = self::getIndex($row, $column);
-            $val = trim(strip_tags($val));
+            $val = trim($val);
 
             if($cell = FormulaCell::getInstance($val)) {
             } else if($cell = NumCell::getInstance($val)) {
@@ -297,6 +300,8 @@ namespace Formulate\Spreadsheet;
         function parse() {
             foreach ($this->data as $key => $cell) {
                 if($replace = $cell->result()) {
+                    //print("Replace\n".$replace[0]."\ninto\n".$replace[1]);
+
                     $this->origin = str_replace($replace[0], $replace[1], $this->origin);
                 }
             }
@@ -309,16 +314,33 @@ namespace Formulate\Spreadsheet;
             if(!$math) {
                 $math = new EvalMath;
             }
+            $columnCount=0;
             $this->math = $math;
-            $this->origin = $table;
-            preg_match_all('#<tr[^<]*?>.*?<\/tr>#is', $table, $rows);
+            $content = preg_replace('#<thead[^>]*?>.*?</thead>#is', '', $table);
+            preg_match_all('#<tr[^<]*?>.*?<\/tr>#is', $content, $rows);
 
             for ($i=0; $i < count($rows[0]); $i++) { 
                 if(preg_match_all('#<td[^<]*?>(.*?)<\/td>#is', $rows[0][$i], $columns)) {
                     for ($j=0; $j < count($columns[0]); $j++) { 
                         $this->makeCell($i, $j, $columns[1][$j]);
                     }
+                    //widest table size
+                    if($j>$columnCount) {
+                        $columnCount = $j;
+                    }
                 }
+            }
+
+            if($content === $table) {
+                //there was no header, can add
+                $header = "\n<thead><tr>";
+                for ($i=0; $i < $columnCount; $i++) { 
+                    $header.="<td>".self::getIndex("",$i)."</td>";
+                }
+                $header.="</tr></thead>\n";
+                $this->origin = preg_replace("#<table[^>]*?>#is", "$0".$header, $table);
+            } else {
+                $this->origin = $table;
             }
 
         }
