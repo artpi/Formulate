@@ -166,7 +166,9 @@ namespace Formulate\Spreadsheet;
         static function getInstance($value) {
             if(preg_match('#'.self::$regex.'#is', $value, $result)) {
                 $ret = new self();
-                $ret->value = $result[3];
+                if(isset($result[3])) {
+                    $ret->value = $result[3];
+                }
                 $ret->formula = str_replace(array(' ',','),array('','.'),$result[1]);
                 $ret->origin = $result[0];
                 return $ret;
