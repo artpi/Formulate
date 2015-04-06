@@ -337,7 +337,7 @@ namespace Formulate\Spreadsheet;
                 //there was no header, can add
                 $header = "\n<thead><tr>";
                 for ($i=0; $i < $columnCount; $i++) { 
-                    $header.="<td>".self::getIndex("",$i)."</td>";
+                    $header.="<td style='text-align:center; background-color: #E6E6E6; font-weight:bold; border: 1.0px solid #d9d9d9;'>".self::getIndex("",$i)."</td>";
                 }
                 $header.="</tr></thead>\n";
                 $this->origin = preg_replace("#<table[^>]*?>#is", "$0".$header, $table);
