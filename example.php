@@ -435,3 +435,73 @@ test("Evernote code",'
 
 
 
+
+
+
+
+
+test('Recalculating results in Evernote code','
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note>
+  <table style="font-size: 14px; border-collapse: collapse; table-layout: fixed;" border="1" width="100%" cellspacing="0" cellpadding="2">
+    <thead>
+      <tr>
+        <td colspan="1" rowspan="1">A</td>
+        <td colspan="1" rowspan="1">B</td>
+        <td colspan="1" rowspan="1">C</td>
+      </tr>
+    </thead>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">10,3</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">43</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">12</td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">4</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">51</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">=A1+A3<br clear="none"/><strong>4</strong><br clear="none"/></td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">80</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">=A1+B1<br clear="none"/><strong>3</strong></td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">5</td>
+    </tr>
+  </table>
+  <div><br clear="none"/><br clear="none"/><strong>Formulate has been trigerred on this note.</strong> <a shape="rect" href="http://formulate.artpi.net/donate" target="_blank">Please donate to keep it going</a></div>
+</en-note>','
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note>
+  <table style="font-size: 14px; border-collapse: collapse; table-layout: fixed;" border="1" width="100%" cellspacing="0" cellpadding="2">
+    <thead>
+      <tr>
+        <td colspan="1" rowspan="1">A</td>
+        <td colspan="1" rowspan="1">B</td>
+        <td colspan="1" rowspan="1">C</td>
+      </tr>
+    </thead>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">10,3</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">43</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">12</td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">4</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">51</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">=A1+A3<br/><strong>90.3</strong><br clear="none"/></td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">80</td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">=A1+B1<br/><strong>53.3</strong></td>
+      <td colspan="1" rowspan="1" valign="top" style="padding: 10.0px; margin: 0.0px; border: 1.0px solid #d9d9d9;">5</td>
+    </tr>
+  </table>
+  <div><br clear="none"/><br clear="none"/><strong>Formulate has been trigerred on this note.</strong> <a shape="rect" href="http://formulate.artpi.net/donate" target="_blank">Please donate to keep it going</a></div>
+</en-note>');
+
+
+
+
+
+

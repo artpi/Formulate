@@ -77,7 +77,7 @@ namespace Formulate\Spreadsheet;
 
 
     class FormulaCell extends NumCell{
-        public static $regex = '=([A-Z0-9\/+\-\*\:\(\)\.\, ]+)(<br[^>]*?><strong>(\#[A-Z]+)|(-?[0-9,.]+)<\/strong>)?';
+        public static $regex = '=([A-Z0-9\/+\-\*\:\(\)\.\, ]+)(<br[^>]*?><strong>(\#[A-Z]+|-?[0-9,.]+)<\/strong>)?';
         public $formula;
         public $calculated = 0;
         protected $origin;
